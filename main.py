@@ -25,26 +25,27 @@ class nBRC(nn.Module):
 
 class nBRCModel(nn.Module):
 
-    def __init__(self, input_dim: int, hidden_dims: list, full: bool = True):
+    def __init__(self, input_dims: int, hidden_dims: int, output_dims: int, num_layers: int, full: bool = True):
         super(nBRCModel, self).__init__()
-        self.input_dim = input_dim
+        self.input_dims = input_dims
         self.hidden_dims = hidden_dims
+        self.output_dims = output_dims
         self.full = full
 
         layers = []
-        for i, hidden_dim in enumerate(self.hidden_dims):
+        for i in range(num_layers):
             layers.append(
-                nBRC(input_dim=self.input_dim if i == 0 else self.hidden_dims[i - 1],
-                     hidden_dim=hidden_dim)
+                nBRC(input_dim=self.input_dims if i == 0 else self.hidden_dims,
+                     hidden_dim=self.hidden_dims)
             )
         self.nBRCLayers = nn.ModuleList(layers)
-        self.fc = nn.Linear(self.hidden_dims[-1], 5)
+        self.fc = nn.Linear(self.hidden_dims, self.output_dims)
 
     def forward(self, x):
         B, seq_len, _ = x.size()
 
         for layer in self.nBRCLayers:
-            h = torch.zeros((B, self.hidden_dims[0]))
+            h = torch.zeros((B, self.hidden_dims))
             layer_output = []
 
             for t in range(seq_len):
@@ -80,7 +81,11 @@ if __name__ == '__main__':
     device = 'cpu'
 
     # Init model
-    model = nBRCModel(input_dim=2, hidden_dims=[100, 100, 100, 100], full=False)
+    model = nBRCModel(input_dims=2,
+                      hidden_dims=100,
+                      output_dims=5,
+                      num_layers=4,
+                      full=False)
     model.to(device)
     optim = torch.optim.Adam(model.parameters())
     criterion = torch.nn.MSELoss(reduction='mean')
