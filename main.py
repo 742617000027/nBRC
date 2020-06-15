@@ -6,16 +6,16 @@ from tqdm import tqdm
 
 class nBRC(nn.Module):
 
-    def __init__(self, input_dim: int, hidden_dim: int):
+    def __init__(self, input_dims: int, hidden_dims: int):
         super(nBRC, self).__init__()
-        self.input_dim = input_dim
-        self.hidden_dim = hidden_dim
+        self.input_dims = input_dims
+        self.hidden_dims = hidden_dims
 
-        self.Ua = nn.Linear(self.input_dim, self.hidden_dim)
-        self.Wa = nn.Linear(self.hidden_dim, self.hidden_dim)
-        self.Uc = nn.Linear(self.input_dim, self.hidden_dim)
-        self.Wc = nn.Linear(self.hidden_dim, self.hidden_dim)
-        self.U = nn.Linear(self.input_dim, self.hidden_dim)
+        self.Ua = nn.Linear(self.input_dims, self.hidden_dims)
+        self.Wa = nn.Linear(self.hidden_dims, self.hidden_dims)
+        self.Uc = nn.Linear(self.input_dims, self.hidden_dims)
+        self.Wc = nn.Linear(self.hidden_dims, self.hidden_dims)
+        self.U = nn.Linear(self.input_dims, self.hidden_dims)
 
     def forward(self, x, h):
         a = 1 + torch.tanh(self.Ua(x) + self.Wa(h))
@@ -32,13 +32,11 @@ class nBRCModel(nn.Module):
         self.output_dims = output_dims
         self.full = full
 
-        layers = []
-        for i in range(num_layers):
-            layers.append(
-                nBRC(input_dim=self.input_dims if i == 0 else self.hidden_dims,
-                     hidden_dim=self.hidden_dims)
-            )
-        self.nBRCLayers = nn.ModuleList(layers)
+        self.nBRCLayers = nn.ModuleList(
+            [nBRC(input_dims=self.input_dims if i == 0 else self.hidden_dims,
+                  hidden_dims=self.hidden_dims)
+             for i in range(num_layers)]
+        )
         self.fc = nn.Linear(self.hidden_dims, self.output_dims)
 
     def forward(self, x):
