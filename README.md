@@ -5,4 +5,4 @@ A Pytorch implementation of the **neuromodulated bistable recurrent cell** (nBRC
 
 Also features a small experimental setup for the Denoising benchmarks described in the paper. 
 
-See original tensorflow implementation [here](https://github.com/nvecoven/BRC/tree/5563e1e97a83407bf9746dd8138ecd0f9b0159df).
+See original tensorflow implementation [here](https://github.com/nvecoven/BRC/).
