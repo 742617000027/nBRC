@@ -43,7 +43,7 @@ class nBRCModel(nn.Module):
         B, seq_len, _ = x.size()
 
         for layer in self.nBRCLayers:
-            h = torch.zeros((B, self.hidden_dims))
+            h = torch.zeros((B, self.hidden_dims), device=x.device)
             layer_output = []
 
             for t in range(seq_len):
