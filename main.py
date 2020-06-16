@@ -60,10 +60,10 @@ def generate_data(B, N, T):
            in [np.sort(np.random.choice(range(T - N), size=5, replace=False)) + (i * T) for i in range(B)]
            for t in tB]
     x1[idx] = 0
-    x1[-1] = 1
     x2 = torch.rand(B * T)
     yT = x2[idx].view(B, 5)
     x1 = x1.view(B, T)
+    x1[:, -1] = 1
     x2 = x2.view(B, T)
     x = torch.stack([x1, x2], dim=2)
     return x, yT
